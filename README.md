@@ -1,5 +1,9 @@
 # BEAR / DBEAR — Bearings-Only Target Localization
 
+[![tests](https://github.com/fistfulofyen/Bearings_only_Localization/actions/workflows/tests.yml/badge.svg)](https://github.com/fistfulofyen/Bearings_only_Localization/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 A Python implementation of the project in **Section 3.8.3** of Bar-Shalom, Li &
 Kirubarajan, *Estimation with Applications to Tracking and Navigation*, for the
 problem of **Section 3.7**. A moving platform measures noisy bearings (angles
@@ -89,6 +93,9 @@ python build_exe.py
   anyway*.
 - **Self-test.** `BEAR.exe --selftest out.json` and
   `DBEAR.exe --selftest out.json out.png` check a copy on another PC.
+- **Distribution.** `build/` and `dist/` are not part of the repository (see
+  `.gitignore`). To share the programs, attach the three files from `dist/`
+  to a GitHub Release (*Releases → Draft a new release*).
 
 ## Command-line programs
 
@@ -259,3 +266,7 @@ report/               project report (LaTeX), experiment script, figures
 docs/algorithms.md    derivations and the ellipse algorithm
 tests/                unit and end-to-end tests
 ```
+
+## License
+
+Released under the [MIT License](LICENSE).

@@ -1,0 +1,43 @@
+# ------------------------------------------------------------------ Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ------------------------------------------------------------------ PyInstaller
+# Created by `python build_exe.py`. Rebuild instead of committing; publish the
+# .exe files as GitHub Release assets.
+build/
+dist/
+*.spec
+
+# ------------------------------------------------------------------ program output
+# Written by BEAR after every run (and by the --selftest options)
+bear_results.json
+selftest_results.*
+
+# ------------------------------------------------------------------ report
+# Re-created by `python report/flatten_for_overleaf.py`
+report/overleaf/
+report_overleaf.zip
+# LaTeX build files (keep report.pdf if you want the compiled paper in the repo)
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# ------------------------------------------------------------------ editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

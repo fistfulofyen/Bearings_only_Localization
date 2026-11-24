@@ -1,0 +1,18 @@
+# Normalize line endings: text files are stored with LF in the repository and
+# checked out with the platform's native line endings.
+* text=auto
+
+# Plain-text files with unusual extensions
+*.DEF text linguist-language=INI
+
+# Binary files: never diff or convert line endings
+*.exe binary
+*.pdf binary
+*.png binary
+*.ico binary
+*.zip binary
+
+# GitHub language statistics: count the Python code, not generated output
+report/generated/** linguist-generated
+report/overleaf/** linguist-generated
+docs/** linguist-documentation
