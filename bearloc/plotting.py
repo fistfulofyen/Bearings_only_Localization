@@ -137,18 +137,24 @@ def _new_axes(ax):
     return fig, ax
 
 
-def _draw_tracks(ax, scenario: Scenario, x_hat: np.ndarray | None, t_end: float) -> None:
-    """Draw the platform track (maneuvers highlighted) and the target tracks."""
+def _draw_tracks(ax, scenario: Scenario, x_hat: np.ndarray | None, t_end: float,
+                 platform_in_legend: bool = True) -> None:
+    """Draw the platform track (maneuvers highlighted) and the target tracks.
+
+    ``platform_in_legend=False`` keeps the platform out of the legend (used
+    when the view is zoomed to the target and the platform is off-screen).
+    """
     t_dense = np.linspace(0.0, t_end, 400)
     plat_dense = scenario.platform_at(t_dense)
-    ax.plot(plat_dense[:, 0], plat_dense[:, 1], color="tab:blue", lw=2, label="platform")
+    ax.plot(plat_dense[:, 0], plat_dense[:, 1], color="tab:blue", lw=2,
+            label="platform" if platform_in_legend else None)
     ax.plot(*scenario.platform_pos, "o", color="tab:blue", ms=6)
     for leg in scenario.maneuvers:
         t_leg = np.linspace(leg.k1 * scenario.T, min(leg.k2 * scenario.T, t_end), 50)
         if t_leg[0] < t_end:
             seg = scenario.platform_at(t_leg)
             ax.plot(seg[:, 0], seg[:, 1], color="tab:cyan", lw=4, alpha=0.7)
-    if scenario.maneuvers:
+    if scenario.maneuvers and platform_in_legend:
         ax.plot([], [], color="tab:cyan", lw=4, alpha=0.7, label="platform maneuver")
 
     true_track = model.target_position(scenario.x_true, t_dense)
@@ -254,7 +260,8 @@ def plot_ellipses(
     scenario = Scenario.from_dict(results["scenario"])
     times = np.asarray(results["times"])
     x_hat = np.asarray(results["mle"]["x"])
-    _draw_tracks(ax, scenario, x_hat, max([times[-1], *[e.t for e in specs]]))
+    _draw_tracks(ax, scenario, x_hat, max([times[-1], *[e.t for e in specs]]),
+                 platform_in_legend=not zoom)
 
     if show_rays:
         z = np.asarray(results["measurements"])
@@ -269,7 +276,11 @@ def plot_ellipses(
                 label=f"{e.g:g}-sigma ellipse" if i == 0 else None)
         ax.plot(*e.center, "+", color="tab:red", ms=10)
         ax.plot(*e.true_position, "kx", ms=7)
-        ax.annotate(f"t={e.t:g}", e.center, textcoords="offset points", xytext=(6, 6), fontsize=8)
+        # label below-right of the estimate, on a light box so that markers
+        # and ellipse lines underneath do not make it unreadable
+        ax.annotate(f"t={e.t:g}", e.center, textcoords="offset points", xytext=(7, -9),
+                    va="top", fontsize=8,
+                    bbox={"boxstyle": "round,pad=0.15", "fc": "white", "ec": "none", "alpha": 0.8})
 
     if zoom and specs:
         pts = np.vstack([sigma_ellipse(e.cov, e.g, e.center, num_points=100) for e in specs]

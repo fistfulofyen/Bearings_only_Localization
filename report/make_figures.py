@@ -162,7 +162,7 @@ def e1_single_run():
                 markersize=3, label="BFGS")
     ax.set_xlabel("iteration")
     ax.set_ylabel(r"$\lambda(x^i) - \lambda_{\min}$")
-    ax.legend(loc="upper right")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.6, 0.02))  # clear of both curves' ends
     save(fig, "fig_convergence")
     macro("resItersBfgs", bf.iterations)
 

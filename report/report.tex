@@ -417,8 +417,8 @@ $n-\rank\Hm$ degrees of freedom.
 For the nonlinear model this holds asymptotically. BEAR uses
 $n-\rank\J(\xh)$ degrees of freedom: $n-4$ normally, and $n-3$ without a
 maneuver, where only three parameter combinations are fitted. Step B7
-compares $\lambda(\xh)$ with the two-sided interval
-$[\chi^2_{n-4}(\alpha/2),\chi^2_{n-4}(1-\alpha/2)]$.
+compares $\lambda(\xh)$ with the two-sided interval between the 2.5\,\%
+and 97.5\,\% quantiles of $\chi^2_{n-4}$ (for 95\,\% confidence).
 
 \paragraph{NEES.} If $\xt=\x-\xh\sim\Normal(\bm0,\J^{-1})$, then
 $\epsilon=\xt\T\J\xt\sim\chi^2_4$, with 95\,\% interval $[0.484,\ 11.14]$
@@ -879,7 +879,8 @@ geometries---the hard sample with noise from $0.5^\circ$ to $6^\circ$, and the
 default scenario with noise from $8^\circ$ to $24^\circ$---fall on the same
 curve when plotted against $\rho_0/\sigma_{\rho_0}$. The largest deviation is
 \divProbMaxDev{} percentage points (\cref{tab:divprob}). For the hard sample
-the law predicts $\hardPred$\,\% ($\rho_0/\sigma_{\rho_0}=\hardSnr$).
+at $3^\circ$ the law predicts $\hardPred$\,\% ($\rho_0/\sigma_{\rho_0}=\hardSnr$),
+against $\hardDivPct$\,\% observed in the 600-run experiment above.
 $\rho_0/\sigma_{\rho_0}$ is therefore the single number that predicts whether
 the bearings-only MLE can fail.
 
@@ -917,8 +918,10 @@ Geometry & $\sigma$ [deg] & $\rho_0/\sigma_{\rho_0}$ & predicted [\%] & observed
 \label{sec:exp-optim}
 
 \cref{fig:convergence} compares the two minimizers on the single run of
-\cref{sec:exp-single}. Gauss--Newton converges quadratically in
-\resIters{} iterations; BFGS needs \resItersBfgs. To test robustness, the
+\cref{sec:exp-single}. Gauss--Newton converges in \resIters{}
+iterations, almost quadratically. Strictly, it is quadratic only for
+zero-residual problems, but here the residuals at the solution are small
+compared with the curvature. BFGS needs \resItersBfgs. To test robustness, the
 initial guess was placed on the first measured bearing at
 $0.1$--$10$ times the true range, with zero velocity, for \initRuns{} noise
 draws each (\cref{tab:init,fig:init}). Both methods found the global optimum
