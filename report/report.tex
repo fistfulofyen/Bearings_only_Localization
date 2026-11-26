@@ -69,7 +69,8 @@
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
 
-\lstset{basicstyle=\ttfamily\footnotesize, columns=fullflexible, frame=single,
+\lstset{basicstyle=\ttfamily\footnotesize, columns=fixed, basewidth=0.5em,
+        keepspaces=true, breaklines=true, frame=single,
         framerule=0.3pt, rulecolor=\color{black!30}, xleftmargin=4pt, xrightmargin=4pt}
 
 \title{\textbf{Bearings-Only Target Localization}\\[4pt]
@@ -104,8 +105,10 @@ simulation to within \divProbMaxDev{} percentage points. A Monte Carlo study
 with \mcRuns{} runs confirms the efficiency and consistency of the estimator
 (average NEES \mcNeesMean{} vs.\ 4; 2-sigma ellipse coverage
 \mcCoverTwo\,\% vs.\ \theoryCoverTwo\,\%), and further experiments quantify the
-effect of maneuver design, noise level and initialization. We close with the
-lessons learned and directions for improvement.
+effect of maneuver design, noise level and initialization. The code is
+publicly available on GitHub and is tested automatically on Windows and
+Linux with three Python versions. We close with the lessons learned and
+directions for improvement.
 \end{abstract}
 
 \tableofcontents
@@ -140,7 +143,8 @@ specification, the project produced:
 \begin{enumerate}[nosep]
   \item a Python package with command-line and graphical versions of both
         programs, in-program help, a user guide, and \testsTotal{} automated
-        tests (\cref{sec:solution});
+        tests, publicly available and continuously tested
+        (\cref{sec:solution,sec:availability});
   \item a unit-invariant numerical observability test and a proof of the
         rank deficiency of the non-maneuvering case (\cref{sec:observability});
   \item rank-aware fitting-error and NEES tests, with an argument for when
@@ -628,6 +632,67 @@ Total & \testsTotal\\
 \end{tabular}
 \end{table}
 
+\subsection{Distribution and availability}
+\label{sec:availability}
+
+\paragraph{Source code.} The complete project is publicly available under
+the MIT license at
+\begin{center}
+\url{https://github.com/fistfulofyen/Bearings_only_Localization}
+\end{center}
+That covers the package, both programs, the tests, the documentation, and
+this report with the scripts that produce its results. Running it needs only
+Python~3.10 or newer:
+\begin{lstlisting}
+git clone https://github.com/fistfulofyen/Bearings_only_Localization.git
+cd Bearings_only_Localization
+pip install -r requirements.txt
+python bear_gui.py            # or: python dbear_gui.py, python bear.py, python dbear.py
+\end{lstlisting}
+Without git, \emph{Code $\rightarrow$ Download ZIP} on the repository page
+gives the same files.
+
+\paragraph{Stand-alone executables.} For users without Python, the build
+script packages the two windows with PyInstaller into one-file programs,
+\texttt{BEAR.exe} and \texttt{DBEAR.exe}. They are about 72\,MB each, since
+Python and all libraries are inside, and start in about 6\,s behind a splash
+screen. Many course submission systems reject \texttt{.exe} uploads, so the
+executables are not stored in the repository or submitted directly. They are
+distributed as GitHub Release downloads, next to the source. A
+\texttt{--selftest} option runs a complete hidden computation, so a copy on
+another PC can be checked without interaction.
+
+\paragraph{Continuous integration.} A GitHub Actions workflow runs the
+complete test suite on GitHub's servers after every push, on freshly
+installed machines (\cref{tab:ci}). For the released state of the
+repository, all six configurations passed.
+
+\paragraph{Independent reproduction.} To check that the results do not
+depend on the author's computer, the repository was cloned without any
+credentials into an empty folder. A fresh Python environment was set up with
+only the declared dependencies, which installed newer library versions than
+those used during development (\cref{tab:ci}). In that environment all
+\testsTotal{} tests pass. The command-line and graphical programs run, and
+they reproduce the results of \cref{sec:experiments} exactly: for example,
+the semi-major axis of the 2-sigma ellipse at $t=600$\,s is 721.45\,m, as
+in \cref{tab:ellipses}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Verification outside the development machine.}
+\label{tab:ci}
+\begin{tabularx}{\linewidth}{@{}lXXl@{}}
+\toprule
+Where & Configuration & What ran & Result\\
+\midrule
+GitHub Actions & Windows; Python 3.10, 3.12, 3.14 & all \testsTotal{} tests, including the GUI tests & passed\\
+GitHub Actions & Linux; Python 3.10, 3.12, 3.14 & all tests (GUI tests skipped: no display) & passed\\
+Fresh clone & no credentials; Python 3.14 with NumPy 2.5.5, SciPy 1.18.1, Matplotlib 3.11.2
+            & all tests; BEAR and DBEAR, command line and windows & passed; identical results\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 % =====================================================================
 \section{Experimental results}
 \label{sec:experiments}
@@ -1039,6 +1104,14 @@ Sample & scaled cond. & B5 & B7 fitting error & B8 NEES\\
   user guide turned out to be as important as the algorithms for making the
   results interpretable, especially the warnings for unobservable or
   diverged cases.
+\item \textbf{Test the delivery, not only the code.} Code that passes its
+  tests on the developer's machine can still fail for everyone else, through
+  a missing file, an undeclared dependency or a platform assumption. Running
+  the tests on fresh machines (continuous integration) and reproducing the
+  results from a credential-free clone (\cref{sec:availability}) checks what
+  others actually receive. Practical constraints matter too: the course
+  submission system rejects \texttt{.exe} files, so the executables are
+  distributed through GitHub Releases instead.
 \end{enumerate}
 
 \subsection{Limitations}
@@ -1087,10 +1160,11 @@ correlated noise, sensor biases, outliers (robust losses), multiple
 platforms, and recursive filters (EKF, UKF, particle filters~\cite{ristic04})
 for real-time tracking.
 
-\paragraph{Software.} Packaging as an installable module, continuous
-integration across platforms, vectorized Monte Carlo for speed, import of
-recorded bearings from files (real data), and a code-signed installer for
-the optional executables.
+\paragraph{Software.} Packaging as an installable module, macOS in the
+continuous-integration matrix, building the executables and attaching them to
+GitHub Releases automatically from the CI workflow, vectorized Monte Carlo
+for speed, import of recorded bearings from files (real data), and a
+code-signed installer for the optional executables.
 
 % =====================================================================
 \section{Conclusion}
@@ -1098,7 +1172,9 @@ the optional executables.
 
 The project delivered complete BEAR and DBEAR programs for bearings-only
 target localization, with command-line and graphical interfaces,
-documentation and \testsTotal{} automated tests. The analysis established
+documentation and \testsTotal{} automated tests. Everything is publicly
+available on GitHub and verified on freshly installed Windows and Linux
+machines. The analysis established
 the observability structure (rank deficiency without a maneuver, and a
 unit-invariant test), the correct statistical tests (rank-aware degrees of
 freedom, and when NEES is meaningful) and the $g$-sigma ellipse algorithm. It
@@ -1176,7 +1252,8 @@ that is a reproducible Monte Carlo study.
 \section{Reproducing the results}
 \label{app:repro}
 
-From the project root:
+Obtain the code from \url{https://github.com/fistfulofyen/Bearings_only_Localization}
+(see \cref{sec:availability}); then, from the project root:
 \begin{lstlisting}
 pip install -r requirements.txt
 python -m unittest discover -s tests -t .     # all automated tests
